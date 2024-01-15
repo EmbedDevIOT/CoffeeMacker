@@ -16,60 +16,41 @@
 
 #include "GlobalConfig.h"
 
-ConfigD config;
-// TIM Timers;
-// TOP Topics;
-
-
-// Firmware version
-// Device.fw = "0.3";
-
-static const char firmware[] = {"0.3"};
+// Global structs
+CNF DevConfig;
+TIM Timers;
+TOP Topics;
+MQTT mqtt;
 
 // Software UART control to DFPlayer
 SoftwareSerial DFPSerial(/*rx =*/DFP_RX, /*tx =*/DFP_TX);
 DFRobotDFPlayerMini myDFPlayer;
-
-// WiFi Login and Password
-const char *ssid = "EMBNET2G";
-const char *password = "";
-
 /**** Secure WiFi Connectivity Initialisation *****/
 WiFiClientSecure espClient;
-
-uint16_t counter = 0;
-uint8_t state = 0;
-
-// MQTT broker credentials (set to NULL if not required)
-const char *mqtt_username = "u_4YVJEF";
-const char *mqtt_password = "v1HPYZgn";
-// Change the variable to your Raspberry Pi IP address, so it connects to your MQTT broker
-const char *mqtt_server = "m5.wqtt.ru";
-const int mqtt_port = 10073;
 /**** MQTT Client Initialisation Using WiFi Connection *****/
 PubSubClient client(espClient);
-
-const String leds_topic = "/led";
-
-
-
-// char mqtt_message[128];
 
 unsigned long lastMsg = 0;
 #define MSG_BUFFER_SIZE (50)
 char msg[MSG_BUFFER_SIZE];
 
+// Function Prototyps
 void WiFiConnection();
 void StartOTA();
-
 
 void setup()
 {
   Serial.begin(BaudSpeed);
-  Serial.println(F("MQTT_Tracker_Started"));
-  Serial.printf("Firmware: %s", firmware);
+  Serial.println(F("Boot"));
+  for (uint8_t i = 0; i < 10; i++)
+  {
+    Serial.print(F("."));
+    delay(10);
+  }
+  Serial.printf(F("Firmware:"));
+  Serial.println(DevConfig.firmware);
 
-  WiFiConnection();
+      WiFiConnection();
   delay(10);
 
   DFPSerial.begin(9600);
@@ -148,7 +129,7 @@ void WiFiConnection()
 {
   Serial.println("Connecting Wifi.");
   WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
+  WiFi.begin(DevConfig.ssid, DevConfig.password);
 
   while (WiFi.waitForConnectResult() != WL_CONNECTED)
   {
@@ -160,5 +141,4 @@ void WiFiConnection()
 
 void StartOTA()
 {
-
 }

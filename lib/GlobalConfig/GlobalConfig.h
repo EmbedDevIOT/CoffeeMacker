@@ -29,47 +29,43 @@
 // Speed Serial Port
 #define BaudSpeed 9600
 
-struct ConfigD {
-  String Ssid = "Keenetic-L3-2.4-prg";     // Имя сети для подключения 
-  String Password = "QFCxfXMA3";           // Пароль сети для подключения 
-  byte LedStartHour = 18;                  // Время запуска подсветки (часы)
-  byte LedStartMinute = 30;                // Время запуска подсветки (минуты)
-  byte LedFinishHour = 18;      
-  byte LedFinishMinute = 30;
-  byte LedOnOFF = 1;              // Флаг старта работы подсветки 
-  byte LedPWM = 60;               // Яркость подсветки
-  byte IP1 = 192;
-  byte IP2 = 168;
-  byte IP3 = 1;
-  byte IP4 = 31;
-  byte GW1 = 192;
-  byte GW2 = 168;
-  byte GW3 = 1;
-  byte GW4 = 1;
-  byte MK1 = 255;
-  byte MK2 = 255;
-  byte MK3 = 255;
-  byte MK4 = 0;
-  byte WiFiMode = 1; // Режим работы WiFi
+struct CNF
+{
+  String firmware = "0.3";       // Firmware version
+  const char *ssid = "EMBNET2G"; // WiFi Login
+  const char *password = "";     // WiFi Pass
 };
 
+struct MQTT
+{
+  // MQTT broker credentials (set to NULL if not required)
+  const char *username = "u_4YVJEF";
+  const char *password = "v1HPYZgn";
+  const char *server = "m5.wqtt.ru";
+  const int port = 10073;
+};
 
-// struct TIM
-// {
-//     uint8_t tim100 = 0;
-//     uint32_t tim1000 = 0;
-// };
+struct TIM
+{
+  uint16_t counter = 0;
+  uint8_t state = 0;
+  uint8_t tim100 = 0;
+  uint32_t tim1000 = 0;
+};
 
-// struct TOP
-// {
-//   String cnt = "cnt";
-//   String ledState = "ledst";
-// };
+struct TOP
+{
+  String cnt = "cnt";
+  String ledState = "ledst";
+};
 
+// extern ConfigD config;
+extern CNF DevConfig;
+extern TOP Topics;
+extern TIM Timers;
+extern MQTT mqtt;
 
-extern ConfigD config;
-// extern TOP Topics;
-// extern TIM Timers;
+void SystemInit();
+void GPIOInit();
 
-
-#endif 
+#endif
