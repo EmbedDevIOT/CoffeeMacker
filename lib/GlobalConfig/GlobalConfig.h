@@ -12,7 +12,6 @@
 #include "ArduinoJSON.h"
 #include "DFRobotDFPlayerMini.h"
 
-
 #define DISABLE 0
 #define ENABLE 1
 
@@ -32,9 +31,11 @@
 
 struct CNF
 {
-  String firmware = "0.6";       // Firmware version
-  const char *ssid = "EMBNET2G"; // WiFi Login
-  const char *password = "Ae19co90$!eT";     // WiFi Pass
+  String firmware = "1.0";               // Firmware version
+  const char *ssid = "EMBNET2G";         // WiFi Login
+  const char *password = "Ae19co90$!eT"; // WiFi Pass
+  bool power = false;
+  uint16_t cup_cnt = 0;
 };
 
 struct MQTT
@@ -56,17 +57,28 @@ struct TIM
 
 struct TOP
 {
+  const String device_topic = "/devCM";
+  String prog = "/devCM/progs";
   String cnt = "cnt";
-  String ledState = "ledst";
+  String pwrState = "/PwrST";
+};
+
+// Coffee enumeration
+enum Coffee 
+{
+  Espresso = 1,
+  DoubleEspresso,
+  Cappuccino
 };
 
 // Sound enumeration
-enum SOUND {
-  PowerON = 1,    // 0001
+enum SOUND
+{
+  PowerON = 1, // 0001
   CleanSyst,
   EspressoSet,
   LungoSet,
-  CappSet, //dse
+  CappSet, // dse
   EspressoReady,
   LungoReady,
   CappReady,
