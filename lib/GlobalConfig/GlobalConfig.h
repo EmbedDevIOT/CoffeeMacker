@@ -12,6 +12,7 @@
 #include "ArduinoJSON.h"
 #include "DFRobotDFPlayerMini.h"
 
+
 #define DISABLE 0
 #define ENABLE 1
 
@@ -31,7 +32,7 @@
 
 struct CNF
 {
-  String firmware = "0.5";       // Firmware version
+  String firmware = "0.6";       // Firmware version
   const char *ssid = "EMBNET2G"; // WiFi Login
   const char *password = "Ae19co90$!eT";     // WiFi Pass
 };
