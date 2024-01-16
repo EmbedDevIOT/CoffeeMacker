@@ -34,6 +34,8 @@ unsigned long lastMsg = 0;
 #define MSG_BUFFER_SIZE (50)
 char msg[MSG_BUFFER_SIZE];
 
+uint8_t track = 0;
+
 // Function Prototyps
 void WiFiConnection();
 void StartOTA();
@@ -41,53 +43,21 @@ void StartOTA();
 void setup()
 {
   Serial.begin(BaudSpeed);
-  Serial.println(F("Boot"));
+  Serial.println("Boot");
   for (uint8_t i = 0; i < 10; i++)
   {
-    Serial.print(F("."));
+    Serial.print(".");
     delay(10);
   }
-  Serial.printf(F("Firmware:"));
+  Serial.printf("Firmware:");
   Serial.println(DevConfig.firmware);
 
-      WiFiConnection();
+  WiFiConnection();
   delay(10);
 
   DFPSerial.begin(9600);
   myDFPlayer.begin(DFPSerial);
 
-  // delay(10);
-  // myDFPlayer.stop();
-  // delay(10);
-  // if (!myDFPlayer.begin(softSerial, /*isACK = */true, /*doReset = */true)) {  //Use serial to communicate with mp3.
-  //   Serial.println(F("Unable to begin:"));
-  //   Serial.println(F("1.Please recheck the connection!"));
-  //   Serial.println(F("2.Please insert the SD card!"));
-  //   while(true){
-  //     delay(0); // Code to compatible with ESP8266 watch dog.
-  //   }
-  // }
-  // Serial.println(F("DFPlayer Mini online."));
-
-  myDFPlayer.volume(5); // Set volume value. From 0 to 30
-  delay(100);
-  myDFPlayer.play(1); // Play the first mp3
-  delay(10000);
-  Serial.println(F("Track 1 stop"));
-  // myDFPlayer.stop();
-  myDFPlayer.volume(5); // Set volume value. From 0 to 30
-  delay(100);
-  Serial.println(F("Volume 5"));
-  myDFPlayer.play(2);
-  delay(100);
-  Serial.println(F("Track 2 Play"));
-
-  delay(100);
-
-  // delay(100);
-  // myDFPlayer.play(1);    // Play the first mp3
-
-  // setup_wifi();
 
   // #ifdef ESP8266
   //   espClient.setInsecure();
@@ -101,6 +71,19 @@ void setup()
 
 void loop()
 {
+  static unsigned long timer = millis();
+    // Serial.println(F("next"));
+
+  // if (millis() - timer > 7000)
+  // {
+  //   timer = millis();
+  //   track ++;
+  //   Serial.printf("track: %d",track);
+  //   Serial.println();
+  //   // myDFPlayer.reset();
+  //   myDFPlayer.play(track); // Play next mp3 every 3 second.
+  //   if(track == 9) track = 1;
+  // }
   // ArduinoOTA.handle();
   // Task1000ms();
 

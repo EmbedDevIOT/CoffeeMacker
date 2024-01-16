@@ -31,9 +31,9 @@
 
 struct CNF
 {
-  String firmware = "0.3";       // Firmware version
+  String firmware = "0.5";       // Firmware version
   const char *ssid = "EMBNET2G"; // WiFi Login
-  const char *password = "";     // WiFi Pass
+  const char *password = "Ae19co90$!eT";     // WiFi Pass
 };
 
 struct MQTT
@@ -57,6 +57,19 @@ struct TOP
 {
   String cnt = "cnt";
   String ledState = "ledst";
+};
+
+// Sound enumeration
+enum SOUND {
+  PowerON = 1,    // 0001
+  CleanSyst,
+  EspressoSet,
+  LungoSet,
+  CappSet, //dse
+  EspressoReady,
+  LungoReady,
+  CappReady,
+  PowerOFF
 };
 
 // extern ConfigD config;
