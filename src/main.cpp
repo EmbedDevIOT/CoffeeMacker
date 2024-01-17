@@ -3,21 +3,22 @@
 # Log: gmail acc
 # Author: EmbeddevIOT (Aleksey Baranov)
 # Date: (create to 13.01.24)
-# Discription:
+# Discription: Control WiFi + MQTT + Yandex
 # ########### Hardware ###########
 # MCU: ESP8266
-# Control: WiFi + MQTT + Yandex
-# Hardware: UART DFPlayer
-# OTA Update
+# Hardware: UART DFPlayer / DS18b20
+# Elegant OTA Update
 # mqtt_name: u_4YVJEF
 # mqtt_pass: v1HPYZgn
 # mqtt_server: m5.wqtt.ru
 # mqtt_port: 10073
 */
 
+// General Header
 #include "GlobalConfig.h"
 
 boolean pin_state = false;
+boolean TASK = false;
 
 // Global structs
 CNF DevConfig;
@@ -33,15 +34,18 @@ WiFiClientSecure espClient;
 /**** MQTT Client Initialisation Using WiFi Connection *****/
 PubSubClient client(espClient);
 /***** Webserver object **********/
-AsyncWebServer server(80); // Create object on port 80
+// AsyncWebServer server(80); // Create object on port 80
+ESP8266WebServer server(80); // Create object on port 80
+// AsyncWebSocket ws("/ws");
 
 unsigned long lastMsg = 0;
 #define MSG_BUFFER_SIZE (50)
 char msg[MSG_BUFFER_SIZE];
 
 // Function Prototyps
-void WiFiConnection();      // Wifi initializing
+void WiFiConnection(); // Wifi initializing
 void StartOTA();
+void Task10ms();
 void Task100ms();
 void Task1000ms();
 void reconnect();
@@ -77,28 +81,49 @@ void setup()
 #else
   espClient.setCACert(root_ca); // enable this line and the the "certificate" code for secure connection
 #endif
-  // Settings for MQTT server 
+  // Settings for MQTT server
   client.setServer(mqtt.server, mqtt.port);
   client.setCallback(callback);
 
-  // Handle the client request 
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(200, "text/plain", "Hi! I am ESP8266."); });
+  // Handle the client request
+  // server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+  //           { request->send(200, "text/plain", "Hi! I am ESP8266."); });
+  server.on("/", []()
+            { server.send(200, "text/plain", "Hi! This is ElegantOTA Demo."); });
   // Start ElegantOTA
-  AsyncElegantOTA.begin(&server); 
+  // AsyncElegantOTA.begin(&server);
+  ElegantOTA.begin(&server); // Start ElegantOTA
   server.begin();
   Serial.println("HTTP server started");
 }
 
 void loop()
 {
+  server.handleClient();
+
+  Task10ms();
   Task1000ms();
 
   if (!client.connected())
     reconnect(); // check if client is connected
-  client.loop();
+}
 
-  // ArduinoOTA.handle();
+void Task10ms()
+{
+  if (millis() - Timers.tim10 >= 10)
+  {
+    Timers.tim100 += 10;
+    TASK = !TASK;
+    if (TASK)
+    {
+      client.loop();
+    }
+    else
+    {
+      ElegantOTA.loop();
+      // AsyncElegantOTA.loop();
+    }
+  }
 }
 
 void Task100ms()
@@ -114,13 +139,14 @@ void Task1000ms()
   if (millis() - Timers.tim1000 >= 3000)
   {
     Timers.tim1000 += 3000;
+    ButtonClick(PWR_PIN);
 
     uint8_t power = digitalRead(ST_PIN);
 
     if (!power)
       DevConfig.power = false; // Check power state
 
-    pin_state = !pin_state;
+    // pin_state = !pin_state;
 
     // digitalWrite(PWR_PIN, pin_state);
     // digitalWrite(ESP_PIN, pin_state);
@@ -269,6 +295,7 @@ void StartOTA()
 
 void ButtonClick(uint8_t pin)
 {
+  Serial.println("Click");
   digitalWrite(pin, HIGH);
   delay(100);
   digitalWrite(pin, LOW);

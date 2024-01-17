@@ -3,15 +3,18 @@
 
 #include <Arduino.h>
 
+#include <OneWire.h>
 #include "SoftwareSerial.h"
 #include "ESP8266WiFi.h"
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <WiFiClientSecure.h>
 
-#include <AsyncElegantOTA.h>
-#include <ESPAsyncTCP.h>
-#include <ESPAsyncWebServer.h>
+// #include <AsyncElegantOTA.h>
+// #include <ESPAsyncTCP.h>
+// #include <ESPAsyncWebServer.h>
+#include <ESP8266WebServer.h>
+#include <ElegantOTA.h>
 
 #include "PubSubClient.h"
 #include "ArduinoJSON.h"
@@ -20,6 +23,7 @@
 #define DISABLE 0
 #define ENABLE 1
 
+// Wifi Network preset 
 #define WORK_NET
 
 // Player Connection
@@ -36,9 +40,12 @@
 // Speed Serial Port
 #define BaudSpeed 9600
 
+
+
+
 struct CNF
 {
-  String firmware = "1.2"; // Firmware version
+  String firmware = "1.4"; // Firmware version
 #ifdef WORK_NET
   const char *ssid = "Keenetic-L3-2.4-prg";         // WiFi Login workNet
   const char *password = "QFCxfXMA3";               // WiFi Pass
@@ -61,8 +68,10 @@ struct MQTT
 
 struct TIM
 {
+  const uint8_t TIM10 =  10, TIM100 = 100;
   uint16_t counter = 0;
   uint8_t state = 0;
+  uint8_t tim10 = 0;
   uint8_t tim100 = 0;
   uint32_t tim1000 = 0;
 };
