@@ -20,6 +20,8 @@
 #define DISABLE 0
 #define ENABLE 1
 
+#define WORK_NET
+
 // Player Connection
 #define DFP_TX D1
 #define DFP_RX D2
@@ -36,9 +38,14 @@
 
 struct CNF
 {
-  String firmware = "1.1";               // Firmware version
+  String firmware = "1.2"; // Firmware version
+#ifdef WORK_NET
+  const char *ssid = "Keenetic-L3-2.4-prg";         // WiFi Login workNet
+  const char *password = "QFCxfXMA3";               // WiFi Pass
+#else
   const char *ssid = "EMBNET2G";         // WiFi Login
   const char *password = "Ae19co90$!eT"; // WiFi Pass
+#endif
   bool power = false;
   uint16_t cup_cnt = 0;
 };
@@ -69,7 +76,7 @@ struct TOP
 };
 
 // Coffee enumeration
-enum Coffee 
+enum Coffee
 {
   Espresso = 1,
   DoubleEspresso,

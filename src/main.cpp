@@ -32,13 +32,15 @@ DFRobotDFPlayerMini myDFPlayer;
 WiFiClientSecure espClient;
 /**** MQTT Client Initialisation Using WiFi Connection *****/
 PubSubClient client(espClient);
+/***** Webserver object **********/
+AsyncWebServer server(80); // Create object on port 80
 
 unsigned long lastMsg = 0;
 #define MSG_BUFFER_SIZE (50)
 char msg[MSG_BUFFER_SIZE];
 
 // Function Prototyps
-void WiFiConnection();
+void WiFiConnection();      // Wifi initializing
 void StartOTA();
 void Task100ms();
 void Task1000ms();
@@ -47,7 +49,6 @@ void callback(char *topic, byte *payload, unsigned int length);
 void publishMessage(const char *topic, String payload, boolean retained);
 void updateLedState(void);
 void ButtonClick(uint8_t pin);
-
 
 void setup()
 {
@@ -76,9 +77,17 @@ void setup()
 #else
   espClient.setCACert(root_ca); // enable this line and the the "certificate" code for secure connection
 #endif
-
+  // Settings for MQTT server 
   client.setServer(mqtt.server, mqtt.port);
   client.setCallback(callback);
+
+  // Handle the client request 
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(200, "text/plain", "Hi! I am ESP8266."); });
+  // Start ElegantOTA
+  AsyncElegantOTA.begin(&server); 
+  server.begin();
+  Serial.println("HTTP server started");
 }
 
 void loop()
@@ -252,7 +261,6 @@ void publishMessage(const char *topic, String payload, boolean retained)
 
 void updateLedState(void)
 {
-
 }
 
 void StartOTA()
