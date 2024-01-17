@@ -300,6 +300,6 @@ void ButtonClick(uint8_t pin)
 {
   Serial.println("Click");
   digitalWrite(pin, HIGH);
-  delay(100);
+  delay(300);
   digitalWrite(pin, LOW);
 }
