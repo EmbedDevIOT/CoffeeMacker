@@ -139,7 +139,7 @@ void Task1000ms()
   if (millis() - Timers.tim1000 >= 3000)
   {
     Timers.tim1000 += 3000;
-    ButtonClick(PWR_PIN);
+    // ButtonClick(PWR_PIN);
 
     uint8_t power = digitalRead(ST_PIN);
 
@@ -254,16 +254,19 @@ void callback(char *topic, byte *payload, unsigned int length)
     switch (tmp_prog)
     {
     case Espresso:
+      ButtonClick(ESP_PIN);
       myDFPlayer.play(EspressoSet);
       delay(10000);
       myDFPlayer.play(EspressoReady);
       break;
     case DoubleEspresso:
+      ButtonClick(LUN_PIN);
       myDFPlayer.play(LungoSet);
       delay(10000);
       myDFPlayer.play(LungoReady);
       break;
     case Cappuccino:
+      ButtonClick(CAP_PIN);
       myDFPlayer.play(CappSet);
       delay(10000);
       myDFPlayer.play(CappReady);

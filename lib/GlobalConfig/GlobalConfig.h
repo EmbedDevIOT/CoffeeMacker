@@ -24,7 +24,7 @@
 #define ENABLE 1
 
 // Wifi Network preset 
-#define WORK_NET
+// #define WORK_NET
 
 // Player Connection
 #define DFP_TX D1
@@ -40,12 +40,9 @@
 // Speed Serial Port
 #define BaudSpeed 9600
 
-
-
-
 struct CNF
 {
-  String firmware = "1.4"; // Firmware version
+  String firmware = "1.5"; // Firmware version
 #ifdef WORK_NET
   const char *ssid = "Keenetic-L3-2.4-prg";         // WiFi Login workNet
   const char *password = "QFCxfXMA3";               // WiFi Pass
