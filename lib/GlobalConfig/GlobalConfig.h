@@ -8,6 +8,11 @@
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <WiFiClientSecure.h>
+
+#include <AsyncElegantOTA.h>
+#include <ESPAsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+
 #include "PubSubClient.h"
 #include "ArduinoJSON.h"
 #include "DFRobotDFPlayerMini.h"
@@ -31,7 +36,7 @@
 
 struct CNF
 {
-  String firmware = "1.0";               // Firmware version
+  String firmware = "1.1";               // Firmware version
   const char *ssid = "EMBNET2G";         // WiFi Login
   const char *password = "Ae19co90$!eT"; // WiFi Pass
   bool power = false;

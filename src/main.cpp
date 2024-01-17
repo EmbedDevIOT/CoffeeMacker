@@ -113,10 +113,10 @@ void Task1000ms()
 
     pin_state = !pin_state;
 
-    digitalWrite(PWR_PIN, pin_state);
-    digitalWrite(ESP_PIN, pin_state);
-    digitalWrite(LUN_PIN, pin_state);
-    digitalWrite(CAP_PIN, pin_state);
+    // digitalWrite(PWR_PIN, pin_state);
+    // digitalWrite(ESP_PIN, pin_state);
+    // digitalWrite(LUN_PIN, pin_state);
+    // digitalWrite(CAP_PIN, pin_state);
 
     publishMessage((Topics.pwrState).c_str(), String(DevConfig.power).c_str(), true);
 
