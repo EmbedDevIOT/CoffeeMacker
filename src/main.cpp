@@ -20,6 +20,7 @@
 boolean pin_state = false;
 boolean TASK = false;
 boolean one_min = false;
+boolean five_sec = false;
 uint16_t tim_counter = 0;
 
 // Global structs
@@ -150,8 +151,8 @@ void Task100ms()
       DevConfig.power = true; // Check power state
       // Serial.println("State_ON");
     }
-    else DevConfig.power = false; // Check power state
-
+    else
+      DevConfig.power = false; // Check power state
   }
 }
 
@@ -185,6 +186,8 @@ void Task1000ms()
   }
 }
 
+
+// Send temperature (every one min)
 void TaskMIN()
 {
   if (one_min)
@@ -257,10 +260,10 @@ void callback(char *topic, byte *payload, unsigned int length)
     if (data_pay == "ON" || data_pay == "1")
     {
       DevConfig.power = true;
-
-      // ButtonClick(PWR_PIN);
-
       myDFPlayer.play(PowerON);
+      delay(2000);
+      ButtonClick(PWR_PIN);
+      // Выбрать задержку
       delay(2000);
       myDFPlayer.play(CleanSyst);
       Serial.println("Power ON");
@@ -269,8 +272,7 @@ void callback(char *topic, byte *payload, unsigned int length)
     if (data_pay == "OFF" || data_pay == "0")
     {
       DevConfig.power = false;
-
-      // ButtonClick(PWR_PIN);
+      ButtonClick(PWR_PIN);
 
       myDFPlayer.play(PowerOFF);
       Serial.println("Power OFF");
@@ -286,20 +288,23 @@ void callback(char *topic, byte *payload, unsigned int length)
     switch (tmp_prog)
     {
     case Espresso:
-      ButtonClick(ESP_PIN);
       myDFPlayer.play(EspressoSet);
+      delay(2000);
+      ButtonClick(ESP_PIN);
       delay(10000);
       myDFPlayer.play(EspressoReady);
       break;
     case DoubleEspresso:
-      ButtonClick(LUN_PIN);
       myDFPlayer.play(LungoSet);
+      delay(3000);
+      ButtonClick(LUN_PIN);
       delay(10000);
       myDFPlayer.play(LungoReady);
       break;
     case Cappuccino:
-      ButtonClick(CAP_PIN);
       myDFPlayer.play(CappSet);
+      delay(3000);
+      ButtonClick(CAP_PIN);
       delay(10000);
       myDFPlayer.play(CappReady);
       break;
@@ -307,7 +312,7 @@ void callback(char *topic, byte *payload, unsigned int length)
     default:
       break;
     }
-    publishMessage("/CM_Progs", String(temp).c_str(), true);
+    // publishMessage("/CM_Progs", String(temp).c_str(), true);
   }
 
   // updateLedState();
