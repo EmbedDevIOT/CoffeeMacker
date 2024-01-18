@@ -261,20 +261,21 @@ void callback(char *topic, byte *payload, unsigned int length)
     {
       DevConfig.power = true;
       myDFPlayer.play(PowerON);
-      delay(2000);
+      delay(3000);
+      myDFPlayer.play(CleanSyst);
+      delay(4000);
       ButtonClick(PWR_PIN);
       // Выбрать задержку
-      delay(2000);
-      myDFPlayer.play(CleanSyst);
+      delay(60000);
       Serial.println("Power ON");
     }
 
     if (data_pay == "OFF" || data_pay == "0")
     {
       DevConfig.power = false;
-      ButtonClick(PWR_PIN);
-
       myDFPlayer.play(PowerOFF);
+      delay(3000);
+      ButtonClick(PWR_PIN);
       Serial.println("Power OFF");
     }
     publishMessage((Topics.pwrState).c_str(), String(DevConfig.power).c_str(), true);
@@ -289,23 +290,23 @@ void callback(char *topic, byte *payload, unsigned int length)
     {
     case Espresso:
       myDFPlayer.play(EspressoSet);
-      delay(2000);
+      delay(3000);
       ButtonClick(ESP_PIN);
-      delay(10000);
+      delay(70000);
       myDFPlayer.play(EspressoReady);
       break;
     case DoubleEspresso:
       myDFPlayer.play(LungoSet);
       delay(3000);
       ButtonClick(LUN_PIN);
-      delay(10000);
+      delay(95000);
       myDFPlayer.play(LungoReady);
       break;
     case Cappuccino:
       myDFPlayer.play(CappSet);
-      delay(3000);
+      delay(4000);
       ButtonClick(CAP_PIN);
-      delay(10000);
+      delay(120000);
       myDFPlayer.play(CappReady);
       break;
 
