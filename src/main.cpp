@@ -100,7 +100,7 @@ void setup()
   // server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
   //           { request->send(200, "text/plain", "Hi! I am ESP8266."); });
   server.on("/", []()
-            { server.send(200, "text/plain", "Hi! This is ElegantOTA Demo."); });
+            { server.send(200, "text/plain", "Hi! This is Coffee Maker Philips Saeco"); });
   // Start ElegantOTA
   // AsyncElegantOTA.begin(&server);
   ElegantOTA.begin(&server); // Start ElegantOTA
@@ -117,7 +117,7 @@ void loop()
   Task10ms();
   Task100ms();
   Task1000ms();
-  TaskMIN();
+  // TaskMIN();
 }
 
 void Task10ms()
@@ -143,16 +143,7 @@ void Task100ms()
   if (millis() - Timers.tim100 >= 100)
   {
     Timers.tim100 += 100;
-
-    // uint8_t power = digitalRead(ST_PIN);
-
-    if (analogRead(ST_PIN) >= 500)
-    {
-      DevConfig.power = true; // Check power state
-      // Serial.println("State_ON");
-    }
-    else
-      DevConfig.power = false; // Check power state
+    analogRead(ST_PIN) >= 500 ? DevConfig.power = true : DevConfig.power = false;
   }
 }
 
@@ -165,8 +156,6 @@ void Task1000ms()
     sensors.requestTemperatures();
     DevConfig.tC = sensors.getTempCByIndex(0);
 
-    Serial.println(analogRead(ST_PIN));
-
     if (tim_counter < 60)
     {
       tim_counter++;
@@ -176,8 +165,7 @@ void Task1000ms()
       tim_counter = 0;
       one_min = true;
     }
-
-    publishMessage((Topics.pwrState).c_str(), String(DevConfig.power).c_str(), true);
+    TaskMIN();
 
     // publishMessage("EmbedevIO", mqtt_message, true);
     // publishMessage(Topics.pwrState, String(DevConfig.power).c_str, true);
@@ -186,7 +174,6 @@ void Task1000ms()
   }
 }
 
-
 // Send temperature (every one min)
 void TaskMIN()
 {
@@ -194,6 +181,7 @@ void TaskMIN()
   {
     one_min = false;
     publishMessage((Topics.temp).c_str(), String(DevConfig.tC).c_str(), true);
+    publishMessage((Topics.pwrState).c_str(), String(DevConfig.power).c_str(), true);
     Serial.print(DevConfig.tC);
     Serial.println("ºC");
   }
@@ -254,6 +242,7 @@ void callback(char *topic, byte *payload, unsigned int length)
   }
   // Serial.println(topic);
   // Serial.println(data_pay);
+  uint32_t now;
 
   if (String(topic) == Topics.device_topic)
   {
@@ -261,12 +250,30 @@ void callback(char *topic, byte *payload, unsigned int length)
     {
       DevConfig.power = true;
       myDFPlayer.play(PowerON);
-      delay(3000);
+      now = millis();
+      // delay(3000);
+      while (millis() - now < 1500)
+      {
+        client.loop();
+        Task1000ms();
+      }
       myDFPlayer.play(CleanSyst);
-      delay(4000);
+      // delay(4000);
+      now = millis();
+      while (millis() - now < 3000)
+      {
+        client.loop();
+        Task1000ms();
+      }
       ButtonClick(PWR_PIN);
       // Выбрать задержку
-      delay(60000);
+      // delay(60000);
+      now = millis();
+      while (millis() - now < 60000)
+      {
+        client.loop();
+        Task1000ms();
+      }
       Serial.println("Power ON");
     }
 
@@ -274,7 +281,7 @@ void callback(char *topic, byte *payload, unsigned int length)
     {
       DevConfig.power = false;
       myDFPlayer.play(PowerOFF);
-      delay(3000);
+
       ButtonClick(PWR_PIN);
       Serial.println("Power OFF");
     }
@@ -290,23 +297,59 @@ void callback(char *topic, byte *payload, unsigned int length)
     {
     case Espresso:
       myDFPlayer.play(EspressoSet);
-      delay(3000);
+      // delay(3000);
+      now = millis();
+      while (millis() - now < 3000)
+      {
+        client.loop();
+        Task1000ms();
+      }
       ButtonClick(ESP_PIN);
-      delay(70000);
+      // delay(70000);
+      now = millis();
+      while (millis() - now < 70000)
+      {
+        client.loop();
+        Task1000ms();
+      }
       myDFPlayer.play(EspressoReady);
       break;
     case DoubleEspresso:
       myDFPlayer.play(LungoSet);
-      delay(3000);
+      // delay(3000);
+      now = millis();
+      while (millis() - now < 4000)
+      {
+        client.loop();
+        Task1000ms();
+      }
       ButtonClick(LUN_PIN);
-      delay(95000);
+      // delay(95000);
+      now = millis();
+      while (millis() - now < 95000)
+      {
+        client.loop();
+        Task1000ms();
+      }
       myDFPlayer.play(LungoReady);
       break;
     case Cappuccino:
       myDFPlayer.play(CappSet);
-      delay(4000);
+      // delay(4000);
+      now = millis();
+      while (millis() - now < 4000)
+      {
+        client.loop();
+        Task1000ms();
+      }
       ButtonClick(CAP_PIN);
-      delay(120000);
+      // delay(120000);
+      now = millis();
+      while (millis() - now < 120000)
+      {
+        client.loop();
+        Task1000ms();
+      }
       myDFPlayer.play(CappReady);
       break;
 
@@ -340,4 +383,8 @@ void ButtonClick(uint8_t pin)
   digitalWrite(pin, HIGH);
   delay(500);
   digitalWrite(pin, LOW);
+}
+
+void ActionOnDelay()
+{
 }

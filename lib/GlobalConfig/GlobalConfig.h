@@ -50,7 +50,7 @@
 
 struct CNF
 {
-  String firmware = "1.8"; // Firmware version
+  String firmware = "2.0"; // Firmware version
 #ifdef WORK_NET
   const char *ssid = "Keenetic-L3-2.4-prg";         // WiFi Login workNet
   const char *password = "QFCxfXMA3";               // WiFi Pass
