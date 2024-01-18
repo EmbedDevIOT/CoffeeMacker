@@ -17,9 +17,10 @@
 // General Header
 #include "GlobalConfig.h"
 
-
 boolean pin_state = false;
 boolean TASK = false;
+boolean one_min = false;
+uint16_t tim_counter = 0;
 
 // Global structs
 CNF DevConfig;
@@ -53,6 +54,7 @@ void StartOTA();
 void Task10ms();
 void Task100ms();
 void Task1000ms();
+void TaskMIN();
 void reconnect();
 void callback(char *topic, byte *payload, unsigned int length);
 void publishMessage(const char *topic, String payload, boolean retained);
@@ -108,13 +110,13 @@ void setup()
 void loop()
 {
   server.handleClient();
+  if (!client.connected())
+    reconnect(); // check if client is connected
 
   Task10ms();
   Task100ms();
   Task1000ms();
-
-  if (!client.connected())
-    reconnect(); // check if client is connected
+  TaskMIN();
 }
 
 void Task10ms()
@@ -140,7 +142,14 @@ void Task100ms()
   if (millis() - Timers.tim100 >= 100)
   {
     Timers.tim100 += 100;
-    sensors.requestTemperatures();
+
+    uint8_t power = digitalRead(ST_PIN);
+
+    if (power)
+    {
+      DevConfig.power = true; // Check power state
+    }
+    else DevConfig.power = false; // Check power state
 
     DevConfig.tC = sensors.getTempCByIndex(0);
   }
@@ -148,35 +157,39 @@ void Task100ms()
 
 void Task1000ms()
 {
-  if (millis() - Timers.tim1000 >= 3000)
+  if (millis() - Timers.tim1000 >= 1000)
   {
-    Timers.tim1000 += 3000;
-    // ButtonClick(PWR_PIN);
+    Timers.tim1000 += 1000;
 
-    Serial.print(DevConfig.tC);
-    Serial.println("ºC");
+    sensors.requestTemperatures();
 
-    // uint8_t power = digitalRead(ST_PIN);
-
-    // if (!power)
-    //   DevConfig.power = false; // Check power state
-
-    // pin_state = !pin_state;
-
-    // digitalWrite(PWR_PIN, pin_state);
-    // digitalWrite(ESP_PIN, pin_state);
-    // digitalWrite(LUN_PIN, pin_state);
-    // digitalWrite(CAP_PIN, pin_state);
-
+    if (tim_counter < 60)
+    {
+      tim_counter++;
+    }
+    else
+    {
+      tim_counter = 0;
+      one_min = true;
+    }
     publishMessage((Topics.pwrState).c_str(), String(DevConfig.power).c_str(), true);
-    publishMessage((Topics.temp).c_str(), String(DevConfig.tC).c_str(), true);
 
     // publishMessage("EmbedevIO", mqtt_message, true);
     // publishMessage(Topics.pwrState, String(DevConfig.power).c_str, true);
     // publishMessage(Topics.cnt.c_str(), String(counter).c_str(), true);
     // publishMessage(Topics.ledState.c_str(), String(LED.state).c_str(), true);
 
-    // publishMessage("led_state", String(state).c_str(), true);
+  }
+}
+
+void TaskMIN()
+{
+  if (one_min)
+  {
+    one_min = false;
+    publishMessage((Topics.temp).c_str(), String(DevConfig.tC).c_str(), true);
+    Serial.print(DevConfig.tC);
+    Serial.println("ºC");
   }
 }
 
