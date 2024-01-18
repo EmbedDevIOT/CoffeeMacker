@@ -2,10 +2,10 @@
 
 void GPIOInit()
 {
-    pinMode(ST_PIN, INPUT);
+    // pinMode(ST_PIN, INPUT);
 
-    pinMode(PWR_PIN, OUTPUT);
-    digitalWrite(PWR_PIN, LOW);
+    // pinMode(PWR_PIN, OUTPUT);
+    // digitalWrite(PWR_PIN, LOW);
 
     pinMode(ESP_PIN, OUTPUT);
     digitalWrite(ESP_PIN, LOW);

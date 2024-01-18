@@ -1,9 +1,12 @@
 #ifndef GlobalConfig_H
 #define GlobalConfig_H
 
+// Include Global library Arduino Framework
 #include <Arduino.h>
 
 #include <OneWire.h>
+#include <DallasTemperature.h>
+
 #include "SoftwareSerial.h"
 #include "ESP8266WiFi.h"
 #include <ESP8266mDNS.h>
@@ -23,8 +26,11 @@
 #define DISABLE 0
 #define ENABLE 1
 
+// Speed Serial Port
+#define BaudSpeed 9600
+
 // Wifi Network preset 
-// #define WORK_NET
+#define WORK_NET
 
 // Player Connection
 #define DFP_TX D1
@@ -37,12 +43,14 @@
 #define LUN_PIN D6
 #define CAP_PIN D7
 
-// Speed Serial Port
-#define BaudSpeed 9600
+// DS18b20 PIN connect 
+// D0 - work 
+#define ONE_WIRE_BUS D3
+
 
 struct CNF
 {
-  String firmware = "1.5"; // Firmware version
+  String firmware = "1.7"; // Firmware version
 #ifdef WORK_NET
   const char *ssid = "Keenetic-L3-2.4-prg";         // WiFi Login workNet
   const char *password = "QFCxfXMA3";               // WiFi Pass
@@ -51,6 +59,7 @@ struct CNF
   const char *password = "Ae19co90$!eT"; // WiFi Pass
 #endif
   bool power = false;
+  float tC = 0.0;
   uint16_t cup_cnt = 0;
 };
 
@@ -79,6 +88,7 @@ struct TOP
   String prog = "/devCM/progs";
   String cnt = "cnt";
   String pwrState = "/PwrST";
+  String temp = "/Temp";
 };
 
 // Coffee enumeration

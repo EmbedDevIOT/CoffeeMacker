@@ -17,6 +17,7 @@
 // General Header
 #include "GlobalConfig.h"
 
+
 boolean pin_state = false;
 boolean TASK = false;
 
@@ -25,6 +26,10 @@ CNF DevConfig;
 TIM Timers;
 TOP Topics;
 MQTT mqtt;
+
+// Themperature sensor Dallas DS18b20
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
 
 // Software UART control to DFPlayer
 SoftwareSerial DFPSerial(/*rx =*/DFP_RX, /*tx =*/DFP_TX);
@@ -76,6 +81,9 @@ void setup()
   DFPSerial.begin(BaudSpeed);
   myDFPlayer.begin(DFPSerial);
 
+  // Start the DS18B20 sensor
+  sensors.begin();
+
 #ifdef ESP8266
   espClient.setInsecure();
 #else
@@ -102,6 +110,7 @@ void loop()
   server.handleClient();
 
   Task10ms();
+  Task100ms();
   Task1000ms();
 
   if (!client.connected())
@@ -131,6 +140,9 @@ void Task100ms()
   if (millis() - Timers.tim100 >= 100)
   {
     Timers.tim100 += 100;
+    sensors.requestTemperatures();
+
+    DevConfig.tC = sensors.getTempCByIndex(0);
   }
 }
 
@@ -141,10 +153,13 @@ void Task1000ms()
     Timers.tim1000 += 3000;
     // ButtonClick(PWR_PIN);
 
-    uint8_t power = digitalRead(ST_PIN);
+    Serial.print(DevConfig.tC);
+    Serial.println("ºC");
 
-    if (!power)
-      DevConfig.power = false; // Check power state
+    // uint8_t power = digitalRead(ST_PIN);
+
+    // if (!power)
+    //   DevConfig.power = false; // Check power state
 
     // pin_state = !pin_state;
 
@@ -154,6 +169,7 @@ void Task1000ms()
     // digitalWrite(CAP_PIN, pin_state);
 
     publishMessage((Topics.pwrState).c_str(), String(DevConfig.power).c_str(), true);
+    publishMessage((Topics.temp).c_str(), String(DevConfig.tC).c_str(), true);
 
     // publishMessage("EmbedevIO", mqtt_message, true);
     // publishMessage(Topics.pwrState, String(DevConfig.power).c_str, true);
@@ -226,7 +242,7 @@ void callback(char *topic, byte *payload, unsigned int length)
     {
       DevConfig.power = true;
 
-      ButtonClick(PWR_PIN);
+      // ButtonClick(PWR_PIN);
 
       myDFPlayer.play(PowerON);
       delay(2000);
@@ -238,7 +254,7 @@ void callback(char *topic, byte *payload, unsigned int length)
     {
       DevConfig.power = false;
 
-      ButtonClick(PWR_PIN);
+      // ButtonClick(PWR_PIN);
 
       myDFPlayer.play(PowerOFF);
       Serial.println("Power OFF");
