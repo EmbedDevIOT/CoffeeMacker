@@ -143,15 +143,15 @@ void Task100ms()
   {
     Timers.tim100 += 100;
 
-    uint8_t power = digitalRead(ST_PIN);
+    // uint8_t power = digitalRead(ST_PIN);
 
-    if (power)
+    if (analogRead(ST_PIN) >= 500)
     {
       DevConfig.power = true; // Check power state
+      // Serial.println("State_ON");
     }
     else DevConfig.power = false; // Check power state
 
-    DevConfig.tC = sensors.getTempCByIndex(0);
   }
 }
 
@@ -162,6 +162,9 @@ void Task1000ms()
     Timers.tim1000 += 1000;
 
     sensors.requestTemperatures();
+    DevConfig.tC = sensors.getTempCByIndex(0);
+
+    Serial.println(analogRead(ST_PIN));
 
     if (tim_counter < 60)
     {
@@ -172,13 +175,13 @@ void Task1000ms()
       tim_counter = 0;
       one_min = true;
     }
+
     publishMessage((Topics.pwrState).c_str(), String(DevConfig.power).c_str(), true);
 
     // publishMessage("EmbedevIO", mqtt_message, true);
     // publishMessage(Topics.pwrState, String(DevConfig.power).c_str, true);
     // publishMessage(Topics.cnt.c_str(), String(counter).c_str(), true);
     // publishMessage(Topics.ledState.c_str(), String(LED.state).c_str(), true);
-
   }
 }
 
@@ -246,8 +249,8 @@ void callback(char *topic, byte *payload, unsigned int length)
   {
     data_pay += String((char)payload[i]);
   }
-  Serial.println(topic);
-  Serial.println(data_pay);
+  // Serial.println(topic);
+  // Serial.println(data_pay);
 
   if (String(topic) == Topics.device_topic)
   {
@@ -329,6 +332,6 @@ void ButtonClick(uint8_t pin)
 {
   Serial.println("Click");
   digitalWrite(pin, HIGH);
-  delay(300);
+  delay(500);
   digitalWrite(pin, LOW);
 }
