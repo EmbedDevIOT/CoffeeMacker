@@ -326,7 +326,7 @@ void callback(char *topic, byte *payload, unsigned int length)
       ButtonClick(LUN_PIN);
       // delay(95000);
       now = millis();
-      while (millis() - now < 95000)
+      while (millis() - now < 90000)
       {
         client.loop();
         Task1000ms();
